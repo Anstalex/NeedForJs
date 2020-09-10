@@ -1,26 +1,8 @@
-
 const score = document.querySelector('.score'),
     start = document.querySelector('.start'),
     gameArea = document.querySelector('.gameArea'),
     car = document.createElement('div');
 car.classList.add('car');
-
-start.addEventListener('click',startGame);
-
-    function startGame(){
-    start.classList.add('hide');
-    setting.start === true;
-    gameArea.appendChild(car);
-    requestAnimationFrame(playGame);
-}
-function playGame(){
-    if(setting.start){
-        requestAnimationFrame(playGame);
-    }
-    
-}
-document.addEventListener('keydown',startMove);
-document.addEventListener('keyup',stopMove);
 
 const keys ={
     ArrowUp: false,
@@ -35,14 +17,61 @@ const setting = {
 };
 
 
+    function startGame(){
+    start.classList.add('hide');
+    gameArea.classList.remove('hide');
+    for(let i = 0; i < 20; i++){
+        const line = document.createElement('div');
+        line.classList.add('line');
+        line.style.top = (i * 100)+ 'px';
+        //line.y = line.offsetTop;
+        line.y = i * 100;
+        gameArea.appendChild(line);
+    }
+    setting.start = true;
+    gameArea.appendChild(car);
+    setting.x = car.offsetLeft;
+    setting.y = car.offsetTop;
+    requestAnimationFrame(playGame);
+}
+
+function playGame(){
+        moveRoad();
+    if(setting.start){
+        if(keys.ArrowLeft && setting.x > 0){
+            setting.x -= setting.speed;
+        }
+        if(keys.ArrowRight && setting.x < 250){
+            setting.x +=setting.speed;
+        }
+        if(keys.ArrowDown  && setting.y < 850){
+            setting.y += setting.speed;
+        }
+        if(keys.ArrowUp && setting.y > 0){
+            setting.y -= setting.speed;
+        }
+        car.style.left = setting.x + 'px';
+        car.style.top = setting.y + 'px';
+        requestAnimationFrame(playGame);
+    }
+    
+}
+
 function startMove(e) {
     e.preventDefault();
     keys[e.key] = true;
     setting.start = true;
-console.log(e.key);
 }
 function stopMove(e) {
     e.preventDefault();
-    console.log('stop');
     keys[e.key] = false;
 }
+
+function moveRoad(){
+        let lines = document.querySelectorAll('line');
+}
+
+
+start.addEventListener('click',startGame);
+document.addEventListener('keydown',startMove);
+document.addEventListener('keyup',stopMove);
