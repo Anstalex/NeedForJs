@@ -20,7 +20,6 @@ const setting = {
 function getQuantityElements(heightElement){
   return document.documentElement.clientHeight / heightElement +1;
 }
-console.log(getQuantityElements(200))
 
 //запуск игрового поля
     function startGame(){
@@ -41,6 +40,7 @@ console.log(getQuantityElements(200))
         enemy.style.top = enemy.y + 'px';
         gameArea.appendChild(enemy);
     }
+    setting.score = 0;
     setting.start = true;
     gameArea.appendChild(car);
     setting.x = car.offsetLeft;
@@ -96,6 +96,15 @@ function moveRoad(){
 function moveEnemy(){
     let enemies = document.querySelectorAll('.enemy');
     enemies.forEach(function (item,i) {
+        let carRect = car.getBoundingClientRect()
+        let enemyRect = item.getBoundingClientRect()
+        if(carRect.top <= enemyRect.bottom &&
+            carRect.right >= enemyRect.left &&
+            carRect.left <= enemyRect.right &&
+            carRect.bottom >= enemyRect.top) {
+            setting.start = false;
+            console.warn('ДТП');
+        }
         item.y += setting.speed / 2;
         item.style.top = item.y + 'px';
         if(item.y > document.documentElement.clientHeight){
@@ -109,3 +118,5 @@ function moveEnemy(){
 start.addEventListener('click',startGame);
 document.addEventListener('keydown',startMove);
 document.addEventListener('keyup',stopMove);
+document.addEventListener('touchstart',startMove);
+document.addEventListener('touchend',stopMove);

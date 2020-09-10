@@ -1,6 +1,16 @@
 .start{
     cursor: pointer;
     text-align: center;
+    margin: 50px auto;
+    max-width: 500px;
+    padding:60px;
+    font-family: sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    border-radius: 40px;
+    background-color: #111111;
+    color: #fff;
+
 }
 .hide{
     display: none;
