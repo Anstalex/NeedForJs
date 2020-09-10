@@ -25,6 +25,12 @@ function getQuantityElements(heightElement){
     function startGame(){
     start.classList.add('hide');
     gameArea.classList.remove('hide');
+    score.classList.remove('hide');
+    gameArea.innerHTML ='';
+    car.style.left = '125px';
+    car.style.bottom = '20px';
+    car.style.top = 'auto';
+
     for(let i = 0; i < getQuantityElements(100); i++){
         const line = document.createElement('div');
         line.classList.add('line');
@@ -53,6 +59,8 @@ function playGame(){
         moveRoad();
         moveEnemy();
     if(setting.start){
+        setting.score += setting.speed;
+        score.innerHTML = "SCORE:<br>" + setting.score;
         if(keys.ArrowLeft && setting.x > 0){
             setting.x -= setting.speed;
         }
@@ -104,6 +112,8 @@ function moveEnemy(){
             carRect.bottom >= enemyRect.top) {
             setting.start = false;
             console.warn('ДТП');
+            start.classList.remove('hide');
+            start.style.top = 104 + 'px';
         }
         item.y += setting.speed / 2;
         item.style.top = item.y + 'px';
@@ -116,6 +126,7 @@ function moveEnemy(){
 
 
 start.addEventListener('click',startGame);
+start.addEventListener('touchstart',startGame);
 document.addEventListener('keydown',startMove);
 document.addEventListener('keyup',stopMove);
 document.addEventListener('touchstart',startMove);
