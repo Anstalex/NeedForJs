@@ -13,20 +13,33 @@ const keys ={
 const setting = {
     start: false,
     score:0,
-    speed:3
+    speed:3,
+    traffic: 3
 };
+//Расчет количества элементов по высоте
+function getQuantityElements(heightElement){
+  return document.documentElement.clientHeight / heightElement +1;
+}
+console.log(getQuantityElements(200))
 
-
+//запуск игрового поля
     function startGame(){
     start.classList.add('hide');
     gameArea.classList.remove('hide');
-    for(let i = 0; i < 20; i++){
+    for(let i = 0; i < getQuantityElements(100); i++){
         const line = document.createElement('div');
         line.classList.add('line');
         line.style.top = (i * 100)+ 'px';
-        //line.y = line.offsetTop;
         line.y = i * 100;
         gameArea.appendChild(line);
+    }
+    for(let i = 0; i < getQuantityElements(100*setting.traffic);i++ ){
+        const enemy = document.createElement('div');
+        enemy.classList.add('enemy');
+        enemy.y = -100 * setting.traffic * (i + 1);
+        enemy.style.left = Math.floor(Math.random() * (gameArea.offsetWidth - 50)) +'px';
+        enemy.style.top = enemy.y + 'px';
+        gameArea.appendChild(enemy);
     }
     setting.start = true;
     gameArea.appendChild(car);
@@ -35,8 +48,10 @@ const setting = {
     requestAnimationFrame(playGame);
 }
 
+//запуск игры
 function playGame(){
         moveRoad();
+        moveEnemy();
     if(setting.start){
         if(keys.ArrowLeft && setting.x > 0){
             setting.x -= setting.speed;
@@ -56,7 +71,7 @@ function playGame(){
     }
     
 }
-
+//Движение машины
 function startMove(e) {
     e.preventDefault();
     keys[e.key] = true;
@@ -66,9 +81,28 @@ function stopMove(e) {
     e.preventDefault();
     keys[e.key] = false;
 }
-
+//Движение дороги
 function moveRoad(){
-        let lines = document.querySelectorAll('line');
+        let lines = document.querySelectorAll('.line');
+        lines.forEach(function (item,i) {
+            item.y += setting.speed;
+            item.style.top = item.y + 'px';
+            if(item.y > document.documentElement.clientHeight){
+                item.y = -100;
+            }
+        })
+}
+//Трафик
+function moveEnemy(){
+    let enemies = document.querySelectorAll('.enemy');
+    enemies.forEach(function (item,i) {
+        item.y += setting.speed / 2;
+        item.style.top = item.y + 'px';
+        if(item.y > document.documentElement.clientHeight){
+            item.y = -100 * setting.traffic;
+            item.style.left = Math.floor(Math.random() * (gameArea.offsetWidth - 50)) +'px';
+        }
+    })
 }
 
 
