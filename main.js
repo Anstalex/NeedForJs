@@ -1,7 +1,13 @@
+const MAX_ENEMY = 6;
 const score = document.querySelector('.score'),
     start = document.querySelector('.start'),
     gameArea = document.querySelector('.gameArea'),
-    car = document.createElement('div');
+    car = document.createElement('div'),
+audio = document.createElement('audio');
+
+audio.src = 'audio.mp3';
+audio.style.cssText = `position:absolute; top: -1000`;
+
 car.classList.add('car');
 
 const keys ={
@@ -16,13 +22,16 @@ const setting = {
     speed:3,
     traffic: 3
 };
+
 //Расчет количества элементов по высоте
 function getQuantityElements(heightElement){
-  return document.documentElement.clientHeight / heightElement +1;
+  return document.documentElement.clientHeight / heightElement + 1;
+
 }
 
 //запуск игрового поля
     function startGame(){
+    audio.play();
     start.classList.add('hide');
     gameArea.classList.remove('hide');
     score.classList.remove('hide');
@@ -30,25 +39,28 @@ function getQuantityElements(heightElement){
     car.style.left = '125px';
     car.style.bottom = '20px';
     car.style.top = 'auto';
-
+//бегут линии
     for(let i = 0; i < getQuantityElements(100); i++){
         const line = document.createElement('div');
         line.classList.add('line');
         line.style.top = (i * 100)+ 'px';
         line.y = i * 100;
-        gameArea.appendChild(line);
+        gameArea.append(line);
     }
     for(let i = 0; i < getQuantityElements(100*setting.traffic);i++ ){
         const enemy = document.createElement('div');
+        const randomEnemy = Math.floor(Math.random() * MAX_ENEMY)+1;
         enemy.classList.add('enemy');
         enemy.y = -100 * setting.traffic * (i + 1);
         enemy.style.left = Math.floor(Math.random() * (gameArea.offsetWidth - 50)) +'px';
         enemy.style.top = enemy.y + 'px';
-        gameArea.appendChild(enemy);
+        enemy.style.background = `transparent url(./image/enemy${randomEnemy}.png) center/cover no-repeat`;
+        gameArea.append(enemy);
     }
     setting.score = 0;
     setting.start = true;
-    gameArea.appendChild(car);
+    gameArea.append(car);
+    document.body.append(audio);
     setting.x = car.offsetLeft;
     setting.y = car.offsetTop;
     requestAnimationFrame(playGame);
@@ -56,6 +68,7 @@ function getQuantityElements(heightElement){
 
 //запуск игры
 function playGame(){
+    console.dir(audio);
         moveRoad();
         moveEnemy();
     if(setting.start){
@@ -82,12 +95,16 @@ function playGame(){
 //Движение машины
 function startMove(e) {
     e.preventDefault();
-    keys[e.key] = true;
+    if (keys.hasOwnProperty(e.key)) {
+        keys[e.key] = true;
+    }
     setting.start = true;
 }
 function stopMove(e) {
     e.preventDefault();
-    keys[e.key] = false;
+    if (keys.hasOwnProperty(e.key)) {
+        keys[e.key] = false;
+    }
 }
 //Движение дороги
 function moveRoad(){
@@ -98,20 +115,21 @@ function moveRoad(){
             if(item.y > document.documentElement.clientHeight){
                 item.y = -100;
             }
-        })
+        });
 }
-//Трафик
+//Трафик/ДТП
 function moveEnemy(){
     let enemies = document.querySelectorAll('.enemy');
     enemies.forEach(function (item,i) {
-        let carRect = car.getBoundingClientRect()
-        let enemyRect = item.getBoundingClientRect()
+        let carRect = car.getBoundingClientRect();
+        let enemyRect = item.getBoundingClientRect();
         if(carRect.top <= enemyRect.bottom &&
             carRect.right >= enemyRect.left &&
             carRect.left <= enemyRect.right &&
             carRect.bottom >= enemyRect.top) {
             setting.start = false;
             console.warn('ДТП');
+            audio.pause();
             start.classList.remove('hide');
             start.style.top = 104 + 'px';
         }
@@ -121,7 +139,7 @@ function moveEnemy(){
             item.y = -100 * setting.traffic;
             item.style.left = Math.floor(Math.random() * (gameArea.offsetWidth - 50)) +'px';
         }
-    })
+    });
 }
 
 
